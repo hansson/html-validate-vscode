@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import {HtmlValidate, Config} from 'html-validate'
+import { HtmlValidate, Config } from 'html-validate'
 
 const WARN = 1;
 const ERROR = 2;
@@ -25,10 +25,10 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if(!workspaceFolders) {
+		if (!workspaceFolders) {
 			return;
 		}
-		
+
 		let htmlValidate: HtmlValidate;
 		try {
 			const config = Config.fromFile(path.join(workspaceFolders[0].uri.fsPath, ".htmlvalidate.json"));
@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 		} catch (error) {
 			htmlValidate = new HtmlValidate();
 		}
-		
+
 		const text = activeEditor.document.getText();
 		const report = htmlValidate.validateString(text);
 		const htmlErrors: vscode.DecorationOptions[] = [];
@@ -46,10 +46,10 @@ export function activate(context: vscode.ExtensionContext) {
 			const result = report.results[i];
 			for (let j = 0; j < result.messages.length; j++) {
 				const message = result.messages[j];
-				if(message.severity == WARN) {
-					htmlWarnings.push({range: activeEditor.document.lineAt(message.line - 1).range, hoverMessage: message.message});
-				} else if(message.severity == ERROR) {
-					htmlErrors.push({range: activeEditor.document.lineAt(message.line - 1).range, hoverMessage: message.message});
+				if (message.severity == WARN) {
+					htmlWarnings.push({ range: activeEditor.document.lineAt(message.line - 1).range, hoverMessage: message.message });
+				} else if (message.severity == ERROR) {
+					htmlErrors.push({ range: activeEditor.document.lineAt(message.line - 1).range, hoverMessage: message.message });
 				}
 			}
 		}
@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 	if (activeEditor) {
 		triggerUpdateDecorations();
 	}
-	
+
 	vscode.window.onDidChangeActiveTextEditor(editor => {
 		activeEditor = editor;
 		if (editor) {
@@ -81,11 +81,11 @@ export function activate(context: vscode.ExtensionContext) {
 			triggerUpdateDecorations();
 		}
 	})
-	
+
 	vscode.workspace.onDidChangeTextDocument(event => {
 		const configuration = vscode.workspace.getConfiguration('html-validate')
 		const runOnEdit = configuration.get("runOnEdit");
-		if(runOnEdit) {
+		if (runOnEdit) {
 			if (activeEditor && event.document === activeEditor.document) {
 				triggerUpdateDecorations();
 			}
