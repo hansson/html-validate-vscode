@@ -11,5 +11,4 @@ This extension contributes the following settings:
 * `html-validate.runOnEdit`: Run html-valide while you are editing a document. If set to false html-validate will only when a document is opened or saved.
 
 ## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
+https://github.com/hansson/html-validate-vscode/issues
