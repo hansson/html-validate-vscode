@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
-import { HtmlValidate, Config } from 'html-validate'
+import { HtmlValidate, Config, ConfigLoader } from 'html-validate'
 
 const WARN = 1;
 const ERROR = 2;
@@ -18,6 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	let activeEditor = vscode.window.activeTextEditor;
+	const loader = new ConfigLoader(Config);
 
 	function updateDecorations() {
 		if (!activeEditor) {
@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		let htmlValidate: HtmlValidate;
 		try {
-			const config = Config.fromFile(path.join(workspaceFolders[0].uri.fsPath, ".htmlvalidate.json"));
+			const config = loader.fromTarget(activeEditor.document.fileName);
 			htmlValidate = new HtmlValidate(config.get());
 		} catch (error) {
 			htmlValidate = new HtmlValidate();
