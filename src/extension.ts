@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path'
 import { HtmlValidate, Config, ConfigLoader } from 'html-validate'
 
 const WARN = 1;
@@ -31,7 +32,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 		let htmlValidate: HtmlValidate;
 		try {
-			const config = loader.fromTarget(activeEditor.document.fileName);
+			const rulesPath = getRulesPath();
+			let config;
+			if (rulesPath) {
+				const targetFile = path.resolve(workspaceFolders[0].uri.fsPath, rulesPath);
+				config = loader.fromTarget(targetFile);
+			} else {
+				config = loader.fromTarget(activeEditor.document.fileName);
+			}
 			htmlValidate = new HtmlValidate(config.get());
 		} catch (error) {
 			htmlValidate = new HtmlValidate();
@@ -55,6 +63,11 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		activeEditor.setDecorations(errorDecorationType, htmlErrors);
 		activeEditor.setDecorations(warnDecorationType, htmlWarnings);
+	}
+
+	function getRulesPath(): string {
+		const configuration = vscode.workspace.getConfiguration("html-validate");
+		return configuration.get("rulesPath");
 	}
 
 	function triggerUpdateDecorations() {
